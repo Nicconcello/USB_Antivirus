@@ -56,6 +56,7 @@ def percorso_database():
     
     # Unisce la cartella trovata con il nome del file
     percorso_completo = os.path.join(cartella_base, "hashes.txt")
+    return percorso_completo
 
 # Trasforma l'Hash in un Set()
 def carica_database(percorso_file):
@@ -76,4 +77,15 @@ def carica_database(percorso_file):
 
 
 
-    return percorso_completo
+# Calcola l'hash SHA-256
+def calcola_hash(filepath):
+    hasher = hashlib.sha256()                  # prende un qualsiasi file e, attraverso una formula matematica, lo trasforma in una sequenza fissa di 64 caratteri alfanumerici
+    try:
+        with open(filepath, 'rb') as f:        # rb = read binary
+            while chunk := f.read(65536):      # Leggiamo 64Kb alla volta
+                hasher.update(chunk)
+        return hasher.hexdigest()
+    except (PermissionError, OSError):
+        return None                # Se Windows blocca la lettura diciamo semplicemente a Python di ignorarlo
+
+
