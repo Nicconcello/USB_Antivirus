@@ -89,3 +89,23 @@ def calcola_hash(filepath):
         return None                # Se Windows blocca la lettura diciamo semplicemente a Python di ignorarlo
 
 
+def scansiona_cartella(cartella_da_controllare, firme_locali):
+    estensioni = ('.exe', '.dll', '.bat', '.ps1')
+
+    for cartella_corrente, sottocartelle, files in os.walk(cartella_da_controllare):
+        for nome_file in files:
+            
+
+
+
+print("       ANTIVIRUS USB - MODALITA' OFFLINE")
+
+# Trova il database e caricalo
+percorso_database = ottieni_percorso_database()
+firme_caricate = carica_database_locale(percorso_database)
+
+if len(firme_caricate) > 0:
+    disco_di_sistema = os.environ.get("SystemDrive", "C:") + "\\"
+
+    print(f"\n[*] Avvio scansione automatica completa sul disco: {disco_di_sistema}")
+    print("[*] Mettiti comodo, l'operazione richiedera' del tempo...\n")
