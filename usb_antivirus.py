@@ -79,14 +79,18 @@ def carica_database(percorso_file):
 
 # Calcola l'hash SHA-256
 def calcola_hash(filepath):
-    hasher = hashlib.sha256()                  # prende un qualsiasi file e, attraverso una formula matematica, lo trasforma in una sequenza fissa di 64 caratteri alfanumerici
+    # prende un qualsiasi file e, attraverso una formula matematica, lo trasforma in una sequenza fissa di 64 caratteri alfanumerici
+    hasher = hashlib.sha256()                  
     try:
-        with open(filepath, 'rb') as f:        # rb = read binary
-            while chunk := f.read(65536):      # Leggiamo 64Kb alla volta
+        # rb = read binary
+        with open(filepath, 'rb') as f:        
+            # Leggiamo 64Kb alla volta
+            while chunk := f.read(65536):      
                 hasher.update(chunk)
         return hasher.hexdigest()
     except (PermissionError, OSError):
-        return None                # Se Windows blocca la lettura diciamo semplicemente a Python di ignorarlo
+        # Se Windows blocca la lettura diciamo semplicemente a Python di ignorarlo
+        return None                
 
 
 def scansiona_cartella(cartella_da_controllare, firme_locali):
@@ -94,7 +98,18 @@ def scansiona_cartella(cartella_da_controllare, firme_locali):
 
     for cartella_corrente, sottocartelle, files in os.walk(cartella_da_controllare):
         for nome_file in files:
-            
+            # Controlla se il file ha un'estensione pericolosa
+            if not nome_file.lower().endswith(estensioni):
+                continue # Se non è eseguibile lo salta
+
+            # Ricostruisce il percorso esatto del file
+            percorso = os.path.join(cartella_corrente,nome_file)
+            # Calcola l'hash del file
+            mio_hash = calcola_hash(percorso)
+
+            # L'hash appena calcolato è nella nostra lista degli hash conosciuti cattivi?
+            if mio_hash in firme_locali:
+                print(f"\n[!!!] MINACCIA TROVATA: {percorso}")
 
 
 
