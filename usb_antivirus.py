@@ -3,6 +3,7 @@ import hashlib
 import yara
 import requests
 import sys
+import shutil
 
 
 # Creo una serie di regole per Yara, se qualcuno di questi comandi viene eseguito nei vari contesti, i programmi esecutori saranno ritenuti sospetti
@@ -111,6 +112,34 @@ def scansiona_cartella(cartella_da_controllare, firme_locali):
             if mio_hash in firme_locali:
                 print(f"\n[!!!] MINACCIA TROVATA: {percorso}")
 
+
+def metti_in_quarantena(percorso_file_infetto):
+    # Trova la cartella base della tua chiavetta USB
+    if getattr(sys, 'frozen', False):
+        cartella_usb = os.path.dirname(sys.executable)
+    else:
+        cartella_usb = os.path.dirname(os.path.abspath(__file__))
+
+    # Crea il percorso per la cartella "Quarantena" sulla chiavetta
+    cartella_quarantena = os.path.join(cartella_usb,"Quarantena")
+
+    # Se non esiste la cartella bisogna crearla
+    if not os.path.exists(cartella_quarantena):
+        os.makedirs(cartella_quarantena)
+
+    # Estrae il nome del file dal suo percorso
+    nome_file = os.path.basename(percorso_file_infetto)
+    nuovo_nome = nome_file + ".infetto"
+
+    # Crea il percorso finale di destinazione
+    destinazione = os.path.join(cartella_quarantena,nuovo_nome)
+
+    # Sposto il file
+    try:
+        shutil.move(percorso_file_infetto,destinazione)
+        return True,destinazione
+    except Exception as e:
+        return False, str(e)
 
 
 print("       ANTIVIRUS USB - MODALITA' OFFLINE")
