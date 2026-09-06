@@ -61,7 +61,7 @@ def percorso_database():
 
 # Trasforma l'Hash in un Set()
 def carica_database(percorso_file):
-  if non os.path.exists(percorso_file):
+  if not os.path.exists(percorso_file):
         print(f"[!] File {percorso_file} non trovato. Scansione per hash disabilitata.")
         return set()
     
@@ -112,6 +112,12 @@ def scansiona_cartella(cartella_da_controllare, firme_locali):
             if mio_hash in firme_locali:
                 print(f"\n[!!!] MINACCIA TROVATA: {percorso}")
 
+                successo, risultato = metti_in_quarantena(percorso)
+                
+                if successo:
+                    print(f"    [V] File neutralizzato e spostato in: {risultato}\n")
+                else:
+                    print(f"    [X] IMPOSSIBILE SPOSTARE IL FILE: {risultato}\n")
 
 def metti_in_quarantena(percorso_file_infetto):
     # Trova la cartella base della tua chiavetta USB
@@ -145,11 +151,16 @@ def metti_in_quarantena(percorso_file_infetto):
 print("       ANTIVIRUS USB - MODALITA' OFFLINE")
 
 # Trova il database e caricalo
-percorso_database = ottieni_percorso_database()
-firme_caricate = carica_database_locale(percorso_database)
+percorso_database = percorso_database()
+firme_caricate = carica_database(percorso_database)
 
 if len(firme_caricate) > 0:
+    # Trova in automatico il disco principale di Windows
     disco_di_sistema = os.environ.get("SystemDrive", "C:") + "\\"
 
     print(f"\n[*] Avvio scansione automatica completa sul disco: {disco_di_sistema}")
     print("[*] Mettiti comodo, l'operazione richiedera' del tempo...\n")
+
+    scansiona_cartella(disco_di_sistema,firme_caricate)
+    print("\n[*] Scansione automatica completata.")
+
