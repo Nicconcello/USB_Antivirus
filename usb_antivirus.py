@@ -61,17 +61,17 @@ def percorso_database():
 
 # Trasforma l'Hash in un Set()
 def carica_database(percorso_file):
-  if not os.path.exists(percorso_file):
-        print(f"[!] File {percorso_file} non trovato. Scansione per hash disabilitata.")
+    if not os.path.exists(percorso_file):
+        print(f"[!] File {percorso_file} non trovato. Scansione disabilitata.")
         return set()
-    
+        
     print("[*] Caricamento database firme in corso...")
     firme = set()
 
     with open(percorso_file, 'r') as file:
-      for riga in file:
-        riga_pulita = riga.strip().lower()
-        firme.add(riga_pulita)
+        for riga in file:
+            riga_pulita = riga.strip().lower()
+            firme.add(riga_pulita)
 
     print(f"[*] Caricate {len(firme)} firme malevole.")
     return firme
